@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:date_format/date_format.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'dart:core';
 import 'theme.dart';
 
 void main() {
@@ -72,9 +71,9 @@ class _MyPickerState extends State<MyPicker> {
   @override
   void initState() {
     _startDate = DateTime.now();
-    _endDate = DateTime.now().add(const Duration(hours: 1));
+    _endDate = DateTime.now().add(const Duration(days: 1));
     _startTime = TimeOfDay.now();
-    _endTime = TimeOfDay(hour: _endDate.hour, minute: _endDate.minute);
+    _endTime = TimeOfDay(hour: _startTime.hour, minute: _startTime.minute);
 
     super.initState();
   }
@@ -112,18 +111,11 @@ class _MyPickerState extends State<MyPicker> {
     return ('$result'.length < 7) ? '$result' : result.toStringAsExponential(2);
   }
 
-  String get _differenceDayHourMin {
-    final total = (_endTime.hour - _startTime.hour) * 60 +
-        (_endTime.minute - _startTime.minute);
-
-    return '${total ~/ 60}/${total % 60}';
-  }
-
   Widget get _buildResult {
     return Column(
       children: [
         const Text("結果 (差)"),
-        /*Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
@@ -149,16 +141,6 @@ class _MyPickerState extends State<MyPicker> {
             Container(
               padding: const EdgeInsets.all(10),
               child: Text('秒: $_differenceSeconds',
-                  style: const TextStyle(fontSize: 30)),
-            ),
-          ],
-        ),*/
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: Text('時間/分: $_differenceDayHourMin',
                   style: const TextStyle(fontSize: 30)),
             ),
           ],
@@ -309,11 +291,11 @@ class _DateTimePickerState extends State<DateTimePicker> {
         onTap: () => _func(context),
         child: Container(
           margin: const EdgeInsets.only(top: 10),
-          width: _width / 1.5,
+          width: _width / 2.5,
           height: _height / 15,
           alignment: Alignment.center,
           child: TextFormField(
-            style: const TextStyle(fontSize: 30),
+            style: const TextStyle(fontSize: 20),
             textAlign: TextAlign.center,
             enabled: false,
             keyboardType: TextInputType.text,
@@ -354,7 +336,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        //_buildSelectDate,
+        _buildSelectDate,
         _buildSelectTime,
       ],
     );
