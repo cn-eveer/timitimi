@@ -69,6 +69,7 @@ class _MyPickerState extends State<MyPicker> {
   late DateTime _startDate, _endDate;
   late TimeOfDay _startTime, _endTime;
 
+  String _category = "c_m";
   @override
   void initState() {
     _startDate = DateTime.now();
@@ -119,10 +120,38 @@ class _MyPickerState extends State<MyPicker> {
     return '${total ~/ 60}/${total % 60}';
   }
 
+  String get _countPrice {
+    final total = (_endTime.hour - _startTime.hour) * 60 +
+        (_endTime.minute - _startTime.minute);
+
+    int checkPrice(int perMin, int price) {
+      int _price = (total ~/ perMin) * price;
+      if (total % perMin > 0) _price += price;
+      return _price;
+    }
+
+    int _price = 0;
+    switch (_category) {
+      case "c_m":
+        _price = checkPrice(5, 80);
+        break;
+      case "c_w":
+        _price = checkPrice(5, 70);
+        break;
+      case "p_m":
+        _price = checkPrice(10, 100);
+        break;
+      case "p_w":
+        _price = checkPrice(10, 90);
+        break;
+    }
+    final _withTax = (_price + _price / 10).round();
+    return '$_price($_withTax)';
+  }
+
   Widget get _buildResult {
     return Column(
       children: [
-        const Text("結果 (差)"),
         /*Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -153,6 +182,7 @@ class _MyPickerState extends State<MyPicker> {
             ),
           ],
         ),*/
+        const Text("結果 (差)"),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -163,6 +193,43 @@ class _MyPickerState extends State<MyPicker> {
             ),
           ],
         ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: Text('料金: $_countPrice',
+                  style: const TextStyle(fontSize: 30)),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget get _buttonOption {
+    Widget _button(String text, String option) {
+      return Padding(
+        padding: const EdgeInsets.all(10),
+        child: OutlinedButton(
+          onPressed: () => setState(() => _category = option),
+          child: Text(text),
+          style: OutlinedButton.styleFrom(
+            backgroundColor: (_category == option)
+                ? Theme.of(context).highlightColor
+                : Colors.transparent,
+          ),
+        ),
+      );
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _button("C - 男", "c_m"),
+        _button("C - 女", "c_w"),
+        _button("P - 男", "p_m"),
+        _button("P - 女", "p_w"),
       ],
     );
   }
@@ -195,6 +262,7 @@ class _MyPickerState extends State<MyPicker> {
                   Column(children: [const Text("終了日時"), _endPicker]),
                 ],
               ),
+              _buttonOption,
               _buildResult,
             ],
           ),
